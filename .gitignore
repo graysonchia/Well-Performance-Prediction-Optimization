@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+
+# Environment and secrets
+.env
+*.env
+backend/.env
+
+# Data and generated outputs
+data/raw/
+analytics/outputs/
+analytics/notebooks/.ipynb_checkpoints/
+*.db
+
+# Node / Expo
+node_modules/
+frontend/node_modules/
+frontend/.expo/
+frontend/.claude/
+frontend/AGENTS.md
+frontend/CLAUDE.md
+frontend/expo-output.log
+frontend/expo-error.log
+npm-debug.log*
+
+# Local/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Legacy local virtualenv project folder
+WellAnalytics/
