@@ -147,6 +147,42 @@ Charts are saved to:
 analytics/outputs/
 ```
 
+## Analysis Charts
+
+### Exploratory Data Analysis
+
+![Well counts by field, type, and status](analytics/outputs/eda_well_counts.png)
+
+![Daily oil production distribution by well](analytics/outputs/eda_oil_distribution_by_well.png)
+
+![Production and pressure correlation heatmap](analytics/outputs/eda_correlation_heatmap.png)
+
+### Production Decline & Forecasting
+
+![Oil production over time by well](analytics/outputs/decline_oil_production_by_well.png)
+
+![Actual vs fitted decline curves and 12-month forecast](analytics/outputs/decline_actual_vs_predicted_forecast.png)
+
+![Prophet forecast for Seria Field](analytics/outputs/prophet_forecast_seria_field.png)
+
+![Prophet forecast for Dulang Field](analytics/outputs/prophet_forecast_dulang_field.png)
+
+![Prophet forecast for Bunga Field](analytics/outputs/prophet_forecast_bunga_field.png)
+
+### Water Cut, Anomalies, Clustering, and Maintenance
+
+![Water cut trend by well](analytics/outputs/water_cut_trend_by_well.png)
+
+![Water cut vs oil production](analytics/outputs/water_cut_vs_oil_production.png)
+
+![Sensor anomalies by vibration trend](analytics/outputs/sensor_anomalies_vibration.png)
+
+![Sensor anomalies near maintenance events](analytics/outputs/sensor_anomalies_vs_maintenance.png)
+
+![K-Means well performance clusters](analytics/outputs/kmeans_well_performance_clusters.png)
+
+![Maintenance cost vs production uplift](analytics/outputs/maintenance_cost_vs_uplift.png)
+
 ## Frontend Setup
 
 Because the project path contains `&`, `npx expo start` may fail on Windows. Use the helper scripts instead.
