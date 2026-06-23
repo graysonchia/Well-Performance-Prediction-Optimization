@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import analytics, auth, wells
+from app.routers import analytics, auth, wells, predictions
 
 
 app = FastAPI(
@@ -23,6 +23,7 @@ API_PREFIX = "/api/v1"
 app.include_router(auth.router, prefix=API_PREFIX)
 app.include_router(wells.router, prefix=API_PREFIX)
 app.include_router(analytics.router, prefix=API_PREFIX)
+app.include_router(predictions.router, prefix=API_PREFIX)
 
 
 @app.get("/")
