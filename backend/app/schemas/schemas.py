@@ -208,3 +208,74 @@ class FieldComparison(BaseModel):
     total_gas_mcf: float
     total_water_bbl: float
     well_count: int
+
+
+class WellKPI(BaseModel):
+    """Key Performance Indicators for a single well"""
+    well_id: int
+    well_name: str
+    field_name: str
+    
+    # Production KPIs
+    total_oil_bbl: float
+    total_gas_mcf: float
+    avg_daily_oil_bbl: float
+    avg_daily_gas_mcf: float
+    
+    # Efficiency KPIs
+    uptime_percentage: float  # (total_days - downtime_days) / total_days * 100
+    avg_downtime_hrs_per_day: float
+    total_downtime_hrs: float
+    
+    # Pressure & Conditions
+    avg_tubing_pressure_psi: float | None = None
+    avg_casing_pressure_psi: float | None = None
+    
+    # Latest readings
+    latest_water_cut_pct: float | None = None
+    latest_log_date: datetime | None = None
+
+
+class DashboardKPI(BaseModel):
+    """Portfolio-level KPIs"""
+    total_wells: int
+    active_wells: int
+    total_production_oil_bbl: float
+    total_production_gas_mcf: float
+    avg_portfolio_uptime_pct: float
+    total_maintenance_cost_usd: float
+    avg_daily_production_oil_bbl: float
+    avg_maintenance_hrs: float
+
+
+class FieldKPI(BaseModel):
+    """Field-level KPIs"""
+    field_name: str
+    well_count: int
+    total_production_oil_bbl: float
+    total_production_gas_mcf: float
+    avg_daily_production_oil_bbl: float
+    avg_uptime_pct: float
+    total_downtime_hrs: float
+
+
+class ProductionComparison(BaseModel):
+    """Compare production across wells or fields"""
+    name: str  # well_name or field_name
+    production_oil_bbl: float
+    production_gas_mcf: float
+    avg_daily_oil_bbl: float
+    ranking: int
+
+
+class EfficiencyMetrics(BaseModel):
+    """Efficiency analysis for a well"""
+    well_id: int
+    well_name: str
+    uptime_percentage: float
+    downtime_percentage: float
+    total_operational_days: int
+    total_downtime_days: int
+    avg_downtime_hrs_per_event: float
+    planned_maintenance_pct: float
+    unplanned_maintenance_pct: float

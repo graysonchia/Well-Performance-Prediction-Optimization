@@ -12,6 +12,9 @@ export const colors = {
   red: '#e74c3c',
   yellow: '#f1c40f',
   blue: '#4aa3ff',
+  cyan: '#3dd5f3',
+  purple: '#a78bfa',
+  success: '#10b981',
 };
 
 export const chartConfig = {

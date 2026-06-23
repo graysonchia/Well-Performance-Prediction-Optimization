@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { chartConfig, colors, spacing } from '../constants/theme';
+import { KPICard, KPIGrid } from '../components/KPICard';
 import api from '../services/api';
 
 const screenWidth = Dimensions.get('window').width;
@@ -71,6 +72,8 @@ export default function AnalyticsScreen() {
   const [declineCurve, setDeclineCurve] = useState([]);
   const [selectedWellId, setSelectedWellId] = useState(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
+  const [dashboardKPI, setDashboardKPI] = useState(null);
+  const [wellKPI, setWellKPI] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -83,18 +86,22 @@ export default function AnalyticsScreen() {
   const loadAnalytics = useCallback(async () => {
     setError('');
     try {
-      const [wellsRes, trendRes, downtimeRes] = await Promise.all([
+      const [wellsRes, trendRes, downtimeRes, kpiRes] = await Promise.all([
         api.get('/wells'),
         api.get('/analytics/production-trend'),
         api.get('/analytics/downtime-summary'),
+        api.get('/analytics/dashboard-kpi'),
       ]);
       setWells(wellsRes.data);
       setProductionTrend(trendRes.data);
       setDowntime(downtimeRes.data);
+      setDashboardKPI(kpiRes.data);
 
       const initialWellId = selectedWellId || wellsRes.data[0]?.id;
       setSelectedWellId(initialWellId);
       if (initialWellId) {
+        const wellKPIRes = await api.get(`/analytics/well-kpi/${initialWellId}`);
+        setWellKPI(wellKPIRes.data);
         await loadDecline(initialWellId);
       }
     } catch (err) {
@@ -137,9 +144,14 @@ export default function AnalyticsScreen() {
     setSelectedWellId(wellId);
     setSelectorOpen(false);
     try {
-      await loadDecline(wellId);
+      const [declineRes, kpiRes] = await Promise.all([
+        api.get(`/analytics/decline-curve/${wellId}`),
+        api.get(`/analytics/well-kpi/${wellId}`),
+      ]);
+      setDeclineCurve(declineRes.data);
+      setWellKPI(kpiRes.data);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Unable to load decline curve.');
+      setError(err.response?.data?.detail || 'Unable to load well data.');
     }
   }
 
@@ -153,8 +165,110 @@ export default function AnalyticsScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.screenTitle}>Analytics</Text>
+      <Text style={styles.screenTitle}>Analytics Dashboard</Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
+
+      {/* Portfolio KPIs */}
+      {dashboardKPI && (
+        <View style={styles.dashboardSection}>
+          <Text style={styles.subsectionTitle}>Portfolio KPIs</Text>
+          <KPIGrid>
+            <KPICard
+              label="Total Production"
+              value={dashboardKPI.total_production_oil_bbl}
+              unit="BBL"
+              icon="water"
+              color={colors.blue}
+            />
+            <KPICard
+              label="Avg Daily Production"
+              value={dashboardKPI.avg_daily_production_oil_bbl}
+              unit="BBL/day"
+              icon="trending-up"
+              color={colors.success}
+            />
+            <KPICard
+              label="Portfolio Uptime"
+              value={dashboardKPI.avg_portfolio_uptime_pct}
+              unit="%"
+              icon="pulse"
+              color={colors.orange}
+            />
+            <KPICard
+              label="Active Wells"
+              value={dashboardKPI.active_wells}
+              unit={`/${dashboardKPI.total_wells}`}
+              icon="cube"
+              color={colors.cyan}
+            />
+            <KPICard
+              label="Total Maintenance Cost"
+              value={dashboardKPI.total_maintenance_cost_usd}
+              unit="USD"
+              icon="cash"
+              color={colors.red}
+            />
+            <KPICard
+              label="Avg Maintenance"
+              value={dashboardKPI.avg_maintenance_hrs}
+              unit="hours"
+              icon="wrench"
+              color={colors.purple}
+            />
+          </KPIGrid>
+        </View>
+      )}
+
+      {/* Well-Specific KPIs */}
+      {wellKPI && (
+        <View style={styles.dashboardSection}>
+          <Text style={styles.subsectionTitle}>Well KPIs - {wellKPI.well_name}</Text>
+          <KPIGrid>
+            <KPICard
+              label="Total Oil"
+              value={wellKPI.total_oil_bbl}
+              unit="BBL"
+              icon="water"
+              color={colors.blue}
+            />
+            <KPICard
+              label="Avg Daily Oil"
+              value={wellKPI.avg_daily_oil_bbl}
+              unit="BBL"
+              icon="trending-up"
+              color={colors.success}
+            />
+            <KPICard
+              label="Uptime"
+              value={wellKPI.uptime_percentage}
+              unit="%"
+              icon="pulse"
+              color={wellKPI.uptime_percentage > 80 ? colors.success : colors.orange}
+            />
+            <KPICard
+              label="Avg Downtime"
+              value={wellKPI.avg_downtime_hrs_per_day}
+              unit="hrs/day"
+              icon="alert-circle"
+              color={colors.red}
+            />
+            <KPICard
+              label="Tubing Pressure"
+              value={wellKPI.avg_tubing_pressure_psi}
+              unit="PSI"
+              icon="gauge"
+              color={colors.cyan}
+            />
+            <KPICard
+              label="Water Cut"
+              value={wellKPI.latest_water_cut_pct || 0}
+              unit="%"
+              icon="water"
+              color={colors.purple}
+            />
+          </KPIGrid>
+        </View>
+      )}
 
       <Section title="Production Trend by Field">
         {productionTrend.length ? (
@@ -234,6 +348,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '800',
     marginBottom: 16,
+  },
+  dashboardSection: {
+    marginBottom: 20,
+  },
+  subsectionTitle: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 12,
   },
   section: {
     marginBottom: 18,
