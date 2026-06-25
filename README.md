@@ -219,6 +219,29 @@ http://localhost:8082
 - Maintenance history
 - Analytics charts for production trend, downtime, and decline curve
 
+## Frontend Dashboard
+
+The Expo dashboard provides the main operations view for the project. After logging in, users land on a tab-based interface with:
+
+- Dashboard overview for total wells, active wells, and total oil production
+- Bar charts for top 5 producing wells and field-level production comparison
+- Wells browser with status badges and detail pages for production, water cut, sensors, and maintenance
+- Analytics view for production trends, downtime summary, and selectable well decline curves
+
+The dashboard reads from the FastAPI backend through `frontend/services/api.js`:
+
+```text
+http://localhost:8000/api/v1
+```
+
+For Android emulator runs, the app automatically uses:
+
+```text
+http://10.0.2.2:8000/api/v1
+```
+
+Make sure the backend API is running and a login user has been created before opening the dashboard.
+
 ## Notes
 
 - Replace all `yourpassword` placeholders with your local PostgreSQL password.
