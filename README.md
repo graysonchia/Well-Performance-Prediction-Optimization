@@ -2,6 +2,8 @@
 
 Oil and gas analytics portfolio project for synthetic well performance monitoring, production forecasting, anomaly detection, and operational dashboarding.
 
+![Well Analytics frontend dashboard](docs/images/frontend-dashboard.png)
+
 ## Project Overview
 
 This project simulates a Malaysian offshore oil field analytics workflow. It includes a PostgreSQL database, FastAPI backend, synthetic seed data, Jupyter analysis notebook, and Expo React Native frontend.
