@@ -11,16 +11,28 @@ Update DB_URL with your PostgreSQL password before running:
 from __future__ import annotations
 
 import math
+import os
 import random
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import psycopg2
 from faker import Faker
+from dotenv import load_dotenv
 from psycopg2.extras import execute_values
 
 
-# TODO: Replace "yourpassword" with your local PostgreSQL password.
-DB_URL = "postgresql://postgres:rodolfo@localhost:5432/wellanalytics"
+load_dotenv(Path(__file__).resolve().parents[2] / "backend" / ".env")
+
+
+def get_db_url() -> str:
+    db_url = os.getenv("SEED_DATABASE_URL") or os.getenv("SYNC_DATABASE_URL")
+    if not db_url:
+        raise RuntimeError("Set SYNC_DATABASE_URL in backend/.env before seeding data.")
+    return db_url.replace("postgresql+psycopg2://", "postgresql://", 1)
+
+
+DB_URL = get_db_url()
 
 FAKER = Faker("en_US")
 Faker.seed(42)

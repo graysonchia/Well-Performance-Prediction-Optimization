@@ -3,7 +3,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.models.models import ProductionLog, Well
+from app.models.models import ProductionLog, Well, WellStatus
 from app.schemas.schemas import (
     DeclineCurvePoint,
     DashboardKPI,
@@ -138,7 +138,7 @@ async def dashboard_kpi(db: AsyncSession = Depends(get_db)):
     # Total wells and active wells
     well_stmt = select(
         func.count(Well.id).label("total_wells"),
-        func.count(func.filter(Well.status == "active")).label("active_wells"),
+        func.count(Well.id).filter(Well.status == WellStatus.active).label("active_wells"),
     )
     well_result = await db.execute(well_stmt)
     well_data = well_result.first()
@@ -367,7 +367,7 @@ async def efficiency_metrics(well_id: int, db: AsyncSession = Depends(get_db)):
     maint_stmt = select(
         func.count(MaintenanceEvent.id).label("total_events"),
         func.coalesce(func.avg(MaintenanceEvent.duration_hrs), 0).label("avg_hrs"),
-        func.count(func.filter(MaintenanceEvent.is_unplanned == True)).label("unplanned"),
+        func.count(MaintenanceEvent.id).filter(MaintenanceEvent.is_unplanned.is_(True)).label("unplanned"),
     ).where(MaintenanceEvent.well_id == well_id)
     maint_result = await db.execute(maint_stmt)
     maint_data = maint_result.first()
